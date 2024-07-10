@@ -1,8 +1,11 @@
 package ru.hogwarts.school.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -27,15 +30,16 @@ public class StudentController {
     public void update(@PathVariable long id, @RequestBody Student student) {
         studentService.update(id, student);
     }
+
     @DeleteMapping("/{id}")
-    public Student remove(@PathVariable long id){
+    public Student remove(@PathVariable long id) {
         return studentService.remove(id);
     }
-//    @GetMapping
-//    public Student
-//    //1. Добавить фильтрацию студентов по возрасту.
-    //
-    //Для этого в StudentController добавить эндпоинт, который принимает число (возраст — поле age)
-    // и возвращает список студентов, у которых совпал возраст с переданным числом.
+
+    @GetMapping
+    public List<Student> filterByAge(@RequestParam int age) {
+        return studentService.filterByAge(age);
+    }
+
 
 }
