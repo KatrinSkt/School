@@ -54,6 +54,6 @@ public class FacultyService {
     }
 
     public List<Student> findStudentsByFacultyId(long id) {
-        return studentRepository.findAllByFaculty_id(id);
+        return studentRepository.findAllByFaculty_Id(id);
     }
 }
