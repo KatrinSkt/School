@@ -8,8 +8,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class HogwartsExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(NotFoundException e){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).
+                body(e.getMessage());
+    }
+
+    @ExceptionHandler(AvatarProcessingException.class)
+    public ResponseEntity<String> handleAvatarProcessingException() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).
+                body("Не удалось прочитать аватарку из запроса или из файла");
     }
 
 }
