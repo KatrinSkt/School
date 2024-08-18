@@ -37,16 +37,19 @@ public class FacultyController {
     public Faculty remove(@PathVariable long id) {
         return facultyService.remove(id);
     }
+
     @GetMapping(params = "color")
-    public List<Faculty> filterByColor(@RequestParam String color){
+    public List<Faculty> filterByColor(@RequestParam(required = false) String color) {
         return facultyService.filterByColor(color);
     }
+
     @GetMapping(params = "nameOrColor")
-    public List<Faculty> filterByNameOrColor(@RequestParam String nameOrColor){
+    public List<Faculty> filterByNameOrColor(@RequestParam(required = false) String nameOrColor) {
         return facultyService.filterByNameOrColor(nameOrColor);
     }
+
     @GetMapping("/{id}/students")
-    public List<Student> findStudentsByFacultyId(@PathVariable long id){
+    public List<Student> findStudentsByFacultyId(@PathVariable long id) {
         return facultyService.findStudentsByFacultyId(id);
     }
 }
