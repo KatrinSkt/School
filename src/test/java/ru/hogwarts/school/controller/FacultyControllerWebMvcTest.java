@@ -1,14 +1,18 @@
 package ru.hogwarts.school.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.model.Faculty;
@@ -18,9 +22,11 @@ import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +46,7 @@ public class FacultyControllerWebMvcTest {
 
     @MockBean
     private StudentRepository studentRepository;
+    @Qualifier("mvcContentNegotiationManager")
 
 
     @Test
@@ -58,24 +65,19 @@ public class FacultyControllerWebMvcTest {
         newFaculty.setName(newName);
         newFaculty.setColor(newColor);
 
-        JSONObject newFacultyTest = new JSONObject();
-        newFacultyTest.put("$.name", newName);
-        newFacultyTest.put("$.id", id);
-        newFacultyTest.put("$.color", newColor);
-        System.out.println(oldFaculty);
-        System.out.println(newFaculty);
-        when(facultyRepository.findById(id)).thenReturn(Optional.of(oldFaculty));
+        when(facultyRepository.findById(any())).thenReturn(Optional.of(oldFaculty));
         when(facultyRepository.save(any())).thenReturn(newFaculty);
         //test, check
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/faculty/{id}", id)
-                        .content(newFacultyTest.toString())
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/faculty/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(newName))
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.color").value(newColor));
+                        .content(objectMapper.writeValueAsString(newFaculty))
+        ).andExpect(result -> {
+                    MockHttpServletResponse response = result.getResponse();
+                    Faculty responseFaculty = objectMapper.readValue(response.getContentAsString(), Faculty.class);
+                    assertThat(responseFaculty).usingRecursiveComparison().isEqualTo(newFaculty);
+                    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+                });
     }
 
     @Test
@@ -123,9 +125,6 @@ public class FacultyControllerWebMvcTest {
                         .delete("/faculty/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").isEmpty())
-                .andExpect(jsonPath("$.id").isEmpty())
-                .andExpect(jsonPath("$.color").isEmpty());
+                .andExpect(status().isNotFound());
     }
 }

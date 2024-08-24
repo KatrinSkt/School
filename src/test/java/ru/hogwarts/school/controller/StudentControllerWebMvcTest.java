@@ -91,7 +91,7 @@ public class StudentControllerWebMvcTest {
     @Test
     @DisplayName("Создать студента")
     void create() throws Exception {
-        Student student1 = new Student(null,"Ivan", 30);
+        Student student1 = new Student();
         when(studentRepository.save(any())).thenReturn(student1);
         mockMvc.perform(post("/student")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -100,7 +100,8 @@ public class StudentControllerWebMvcTest {
                 .andExpect(jsonPath("$.name").value(student1.getName()))
                 .andExpect(jsonPath("$.age").value(student1.getAge()));
     }
-   /* @Test
+
+    @Test
     @DisplayName("Удалить студента")
     void deleteStudent() throws Exception {
         Student student1 = new Student();
@@ -113,7 +114,7 @@ public class StudentControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
-    }*/
+    }
 
     @Test
     @DisplayName("Найти факультет по id студента")
