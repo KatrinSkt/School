@@ -76,4 +76,18 @@ public class StudentController {
                 .contentType(MediaType.parseMediaType(pair.getSecond()))
                 .body(data);
     }
+    @GetMapping("/count")
+    public long countStudents() {
+        return studentService.countStudents();
+    }
+
+    @GetMapping("/average-age")
+    public double averageAge() {
+       return studentService.averageAge();
+    }
+
+    @GetMapping("/last-five")
+    public List<Student> getLastFiveStudents() {
+        return studentService.getLastFiveStudents();
+    }
 }

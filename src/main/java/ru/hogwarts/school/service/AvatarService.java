@@ -3,6 +3,7 @@ package ru.hogwarts.school.service;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -14,10 +15,12 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -73,6 +76,10 @@ public class AvatarService {
         } catch (IOException e) {
             throw new AvatarProcessingException();
         }
+    }
 
+    public List<Avatar> getAvatarPage(int pageNumber, int pageSize) {
+        PageRequest request = PageRequest.of(pageNumber - 1, pageSize);
+        return avatarRepository.findAll(request).getContent();
     }
 }
