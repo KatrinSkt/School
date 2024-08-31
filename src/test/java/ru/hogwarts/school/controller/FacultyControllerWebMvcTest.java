@@ -38,14 +38,12 @@ public class FacultyControllerWebMvcTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @SpyBean
-    private FacultyService facultyService;
-
     @MockBean
     private FacultyRepository facultyRepository;
 
     @MockBean
     private StudentRepository studentRepository;
+
     @Qualifier("mvcContentNegotiationManager")
 
 
@@ -73,11 +71,11 @@ public class FacultyControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newFaculty))
         ).andExpect(result -> {
-                    MockHttpServletResponse response = result.getResponse();
-                    Faculty responseFaculty = objectMapper.readValue(response.getContentAsString(), Faculty.class);
-                    assertThat(responseFaculty).usingRecursiveComparison().isEqualTo(newFaculty);
-                    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-                });
+            MockHttpServletResponse response = result.getResponse();
+            Faculty responseFaculty = objectMapper.readValue(response.getContentAsString(), Faculty.class);
+            assertThat(responseFaculty).usingRecursiveComparison().isEqualTo(newFaculty);
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        });
     }
 
     @Test
