@@ -4,7 +4,10 @@ package ru.hogwarts.school.controller;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.service.AvatarService;
+
+import java.util.List;
 
 
 @RestController
@@ -20,7 +23,13 @@ public class AvatarController {
     public void uploadAvatar(@RequestPart("avatar") MultipartFile multipartFile,
                              @RequestParam long studentId) {
         avatarService.uploadAvatar(multipartFile, studentId);
-
     }
+
+    @GetMapping
+    public List<Avatar> getAvatarPage(@RequestParam("page") int pageNumber,
+                                      @RequestParam("size") int pageSize) {
+        return avatarService.getAvatarPage(pageNumber, pageSize);
+    }
+
 }
 
