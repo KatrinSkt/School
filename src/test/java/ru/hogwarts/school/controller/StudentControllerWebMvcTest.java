@@ -25,13 +25,15 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @RunWith(SpringRunner.class)
 @WebMvcTest(StudentController.class)
 public class StudentControllerWebMvcTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @SpyBean
+    private StudentService studentService;
 
     @MockBean
     private StudentRepository studentRepository;
