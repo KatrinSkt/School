@@ -1,7 +1,8 @@
 package ru.hogwarts.school.service;
 
 import jakarta.transaction.Transactional;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.util.Pair;
@@ -15,7 +16,6 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
-import java.awt.print.Pageable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +27,7 @@ import java.util.UUID;
 @Service
 
 public class AvatarService {
+    private static final Logger logger = LoggerFactory.getLogger(AvatarService.class);
     private final StudentRepository studentRepository;
     private final AvatarRepository avatarRepository;
     private final Path path;
@@ -42,6 +43,7 @@ public class AvatarService {
 
     @Transactional
     public void uploadAvatar(MultipartFile multipartFile, long studentId) {
+        logger.info("Was invoked method for \"uploadAvatar\"");
         try {
             byte[] data = multipartFile.getBytes();
             String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
@@ -58,22 +60,26 @@ public class AvatarService {
             avatar.setFilePath(avatarPath.toString());
             avatarRepository.save(avatar);
         } catch (IOException e) {
+            logger.error("Blowout exception \"AvatarProcessingException\"");
             throw new AvatarProcessingException();
         }
     }
 
     public Pair<byte[], String> getAvatarFromDb(long studentId) {
+        logger.info("Was invoked method for \"getAvatarFromDb\"");
         Avatar avatar = avatarRepository.findByStudent_Id(studentId).
                 orElseThrow(() -> new StudentNotFoundException(studentId));
         return Pair.of(avatar.getData(), avatar.getMediaType());
     }
 
     public Pair<byte[], String> getAvatarFromFs(long studentId) {
+        logger.info("Was invoked method for \"getAvatarFromFs\"");
         try {
             Avatar avatar = avatarRepository.findByStudent_Id(studentId).
                     orElseThrow(() -> new StudentNotFoundException(studentId));
             return Pair.of(Files.readAllBytes(Paths.get(avatar.getFilePath())), avatar.getMediaType());
         } catch (IOException e) {
+            logger.error("Blowout exception \"AvatarProcessingException\"");
             throw new AvatarProcessingException();
         }
     }
