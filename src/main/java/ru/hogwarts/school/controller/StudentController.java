@@ -90,4 +90,9 @@ public class StudentController {
     public List<Student> getLastFiveStudents() {
         return studentService.getLastFiveStudents();
     }
+
+    @GetMapping("/names")
+    public List<String> getNameOfStudentsWhichStartsWith(@RequestParam char startWith) {
+        return studentService.getNameOfStudentsWhichStartsWith(startWith);
+    }
 }
